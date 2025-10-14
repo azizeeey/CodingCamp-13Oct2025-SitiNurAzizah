@@ -1,0 +1,239 @@
+/* ====================================
+   1. CSS Variables (Themes)
+   ==================================== */
+:root {
+    /* Light Mode Variables */
+    --bg-main: linear-gradient(to right bottom, #f0f0f0, #e0e0e0);
+    --bg-container: #ffffff;
+    --bg-summary: #f7f9fc;
+    --text-primary: #333333;
+    --text-secondary: #888888;
+    --border-light: #e0e0e0;
+    --border-dark: #ddd;
+    --table-header-bg: #f7f9fc;
+    --table-row-hover: #fafafa;
+    --icon-color: #666;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.dark-theme {
+    /* Dark Mode Variables */
+    --bg-main: #121212;
+    --bg-container: #1e1e1e;
+    --bg-summary: #252525;
+    --text-primary: #f0f0f0;
+    --text-secondary: #aaaaaa;
+    --border-light: #333333;
+    --border-dark: #444444;
+    --table-header-bg: #252525;
+    --table-row-hover: #2a2a2a;
+    --icon-color: #ccc;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+
+/* ====================================
+   2. Global Styles & Theme Toggle
+   ==================================== */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--bg-main);
+    color: var(--text-primary);
+    margin: 0;
+    padding: 30px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 100vh;
+    transition: background-color 0.3s;
+}
+
+.container {
+    background-color: var(--bg-container);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    max-width: 900px;
+    width: 95%;
+}
+
+.theme-toggle-btn {
+    align-self: flex-end; /* Posisikan tombol di kanan atas */
+    margin-right: 5%;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    transition: color 0.3s;
+}
+
+
+/* ====================================
+   3. Header & Summary Section
+   ==================================== */
+.summary-card {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 15px;
+    background-color: var(--bg-summary);
+    border: 1px solid var(--border-light);
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Specific colors remain fixed for visibility */
+.stat-value.completed { color: #5cb85c; }
+.stat-value.pending { color: #f0ad4e; }
+.stat-value.progress { color: #007bff; }
+
+
+/* ====================================
+   4. Input Form & Controls
+   ==================================== */
+.input-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+#todo-input, #date-input, #search-input, #filter-status {
+    padding: 12px 15px;
+    border: 1px solid var(--border-dark);
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: var(--bg-container);
+    color: var(--text-primary);
+}
+
+#todo-input { flex-grow: 1; }
+#date-input { width: 150px; }
+
+.add-button {
+    background-color: #ff69b4; 
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-button:hover { background-color: #e65a9e; }
+
+.controls-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+#search-input { flex-grow: 1; }
+
+#filter-status {
+    background-color: var(--bg-container);
+    cursor: pointer;
+}
+
+.delete-all-btn {
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: 600;
+}
+
+.delete-all-btn:hover { background-color: #c9302c; }
+
+/* ====================================
+   5. Task List Table
+   ==================================== */
+.task-list-container { overflow-x: auto; }
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-dark);
+    transition: border-bottom-color 0.3s;
+}
+
+thead th {
+    font-weight: 600;
+    color: var(--text-secondary);
+    background-color: var(--table-header-bg);
+}
+
+tbody tr {
+    background-color: var(--bg-container);
+    transition: background-color 0.3s;
+}
+
+tbody tr:hover {
+    background-color: var(--table-row-hover);
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.pending-status {
+    background-color: #f0ad4e30;
+    color: #f0ad4e;
+}
+
+.completed-status {
+    background-color: #5cb85c30;
+    color: #5cb85c;
+    text-decoration: line-through;
+}
+
+/* Action Buttons */
+.action-buttons button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 5px;
+    font-size: 16px;
+    color: var(--icon-color);
+    transition: color 0.3s;
+}
+
+.action-buttons .complete-btn:hover { color: #5cb85c; }
+.action-buttons .delete-btn:hover { color: #d9534f; }
+
+.task-completed .task-text {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+}
