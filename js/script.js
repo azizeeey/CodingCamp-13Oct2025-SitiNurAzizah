@@ -9,19 +9,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const deleteAllBtn = document.getElementById('delete-all-btn');
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
     const body = document.body;
+    const notificationElement = document.getElementById('notification');
 
     let todos = JSON.parse(localStorage.getItem('todos')) || [];
 
-    // --- Theme Logic ---
+    function showNotification(message, type = 'info') {
+        notificationElement.className = 'notification-popup'; 
+        notificationElement.classList.add('notification-popup', 'show', type);
+        notificationElement.textContent = message;
+
+        setTimeout(() => {
+            notificationElement.classList.remove('show');
+        }, 3000);
+    }
+
+    function saveTodos() {
+        localStorage.setItem('todos', JSON.stringify(todos));
+    }
 
     function loadTheme() {
         const savedTheme = localStorage.getItem('theme') || 'light';
         if (savedTheme === 'dark') {
             body.classList.add('dark-theme');
-            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>'; // Icon Matahari
+            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>'; 
         } else {
             body.classList.remove('dark-theme');
-            themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>'; // Icon Bulan
+            themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
         }
     }
 
@@ -29,14 +42,9 @@ document.addEventListener('DOMContentLoaded', () => {
         body.classList.toggle('dark-theme');
         const currentTheme = body.classList.contains('dark-theme') ? 'dark' : 'light';
         localStorage.setItem('theme', currentTheme);
-        loadTheme(); // Perbarui ikon
+        loadTheme();
+        showNotification(`${currentTheme === 'dark' ? 'Dark Mode' : 'Light Mode'} Activated`, 'info');
     });
-
-    // --- Core To-Do Functions ---
-
-    function saveTodos() {
-        localStorage.setItem('todos', JSON.stringify(todos));
-    }
 
     function renderTodos() {
         taskList.innerHTML = '';
@@ -54,8 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
         filteredTodos.forEach(todo => {
             const row = document.createElement('tr');
             row.className = todo.completed ? 'task-completed' : '';
-            
-            // Format due date to 'YYYY-MM-DD'
+            row.dataset.id = todo.id;
+
             const dueDateFormatted = todo.date; 
 
             row.innerHTML = `
@@ -69,6 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td class="action-buttons">
                     <button class="complete-btn" data-id="${todo.id}" title="Mark as Completed">
                         <i class="fas fa-check"></i>
+                    </button>
+                    <button class="edit-btn" data-id="${todo.id}" title="Edit Task">
+                        <i class="fas fa-edit"></i>
                     </button>
                     <button class="delete-btn" data-id="${todo.id}" title="Delete Task">
                         <i class="fas fa-trash-alt"></i>
@@ -86,14 +97,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const completed = todos.filter(t => t.completed).length;
         const pending = total - completed;
         const progress = total === 0 ? 0 : Math.round((completed / total) * 100);
+        
+        const progressBarFill = document.getElementById('progress-bar-fill');
 
         document.getElementById('total-tasks').textContent = total;
         document.getElementById('completed-tasks').textContent = completed;
         document.getElementById('pending-tasks').textContent = pending;
         document.getElementById('progress-percent').textContent = `${progress}%`;
+        
+        progressBarFill.style.width = `${progress}%`;
     }
-
-    // --- Event Handlers ---
 
     // 1. Add To-Do (Form Submission & Validation)
     todoForm.addEventListener('submit', (e) => {
@@ -102,13 +115,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const text = todoInput.value.trim();
         const date = dateInput.value;
 
-        // Validation
         if (text === "") {
-            alert("Task input cannot be empty!");
+            showNotification("Task input cannot be empty!", 'danger');
             return;
         }
         if (date === "") {
-            alert("Please select a due date!");
+            showNotification("Please select a due date!", 'danger');
             return;
         }
 
@@ -123,47 +135,80 @@ document.addEventListener('DOMContentLoaded', () => {
         saveTodos();
         renderTodos();
 
-        // Clear input
+        showNotification("Task Added Successfully!", 'success');
+        
         todoInput.value = '';
         dateInput.value = '';
     });
 
-    // 2. Complete or Delete Task
+    // 2. Complete, Edit, or Delete Task
     taskList.addEventListener('click', (e) => {
-        const id = parseInt(e.target.closest('button')?.dataset.id);
+        const targetBtn = e.target.closest('button');
+        if (!targetBtn) return; 
 
-        if (e.target.closest('.complete-btn')) {
-            const todoIndex = todos.findIndex(t => t.id === id);
-            if (todoIndex > -1) {
-                todos[todoIndex].completed = !todos[todoIndex].completed;
+        const id = parseInt(targetBtn.dataset.id);
+        
+        if (targetBtn.classList.contains('complete-btn')) {
+            const todo = todos.find(t => t.id === id);
+            if (todo) {
+                todo.completed = !todo.completed;
                 saveTodos();
                 renderTodos();
+                showNotification(`Task marked as ${todo.completed ? 'Completed' : 'Pending'}`, 'info');
             }
         } 
         
-        else if (e.target.closest('.delete-btn')) {
-            todos = todos.filter(t => t.id !== id);
-            saveTodos();
-            renderTodos();
+        else if (targetBtn.classList.contains('delete-btn')) {
+            if (confirm("Are you sure you want to delete this task?")) {
+                todos = todos.filter(t => t.id !== id);
+                saveTodos();
+                renderTodos();
+                showNotification("Task Deleted!", 'danger');
+            }
+        }
+
+        else if (targetBtn.classList.contains('edit-btn')) {
+            handleEdit(id);
         }
     });
+    
+    // 3. Edit Handler Function
+    function handleEdit(id) {
+        const todo = todos.find(t => t.id === id);
+        if (!todo) return;
+        
+        const newText = prompt("Edit Task Description:", todo.text);
 
-    // 3. Filter Tasks by Status
+        if (newText === null || newText.trim() === "") {
+            if (newText !== null) showNotification("Edit cancelled or description is empty!", 'danger');
+            return;
+        }
+        todo.text = newText.trim();
+        
+        // Opsional: Jika Anda ingin juga mengedit tanggal
+        const newDate = prompt("Edit Due Date (YYYY-MM-DD):", todo.date);
+        if (newDate !== null && newDate.trim() !== "") {
+            todo.date = newDate.trim();
+        }
+        
+        saveTodos();
+        renderTodos();
+        showNotification("Task Edited Successfully!", 'info');
+    }
+
     filterStatus.addEventListener('change', renderTodos);
 
-    // 4. Search Tasks by Text
     searchInput.addEventListener('input', renderTodos);
 
-    // 5. Delete All Tasks
     deleteAllBtn.addEventListener('click', () => {
         if (confirm("Are you sure you want to delete ALL tasks? This cannot be undone.")) {
             todos = [];
             saveTodos();
             renderTodos();
+            showNotification("All Tasks Deleted!", 'danger');
         }
     });
 
-    // Initial load
     loadTheme();
     renderTodos();
 });
