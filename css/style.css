@@ -237,3 +237,65 @@ tbody tr:hover {
     text-decoration: line-through;
     color: var(--text-secondary);
 }
+
+/* ====================================
+   6. Notification Popup Styles
+   ==================================== */
+.notification-popup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.5s, transform 0.5s;
+    transform: translateY(-50px);
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.notification-popup.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.notification-popup.success {
+    background-color: #5cb85c; /* Green for success */
+}
+
+.notification-popup.info {
+    background-color: #007bff; /* Blue for info/edit */
+}
+
+.notification-popup.danger {
+    background-color: #d9534f; /* Red for delete/error */
+}
+
+/* Modifikasi tombol edit */
+.action-buttons .edit-btn:hover { color: #007bff; }
+
+/* ====================================
+   7. Progress Bar Styles
+   ==================================== */
+.progress-bar-container {
+    height: 10px;
+    background-color: var(--border-light); /* Latar belakang bar */
+    border-radius: 5px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    transition: background-color 0.3s;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(to right, #66bb6a, #4caf50); /* Gradient hijau */
+    border-radius: 5px;
+    transition: width 0.5s ease-in-out;
+}
+
+/* Penyesuaian Dark Mode pada Progress Bar */
+.dark-theme .progress-bar-container {
+    background-color: var(--border-dark);
+}
