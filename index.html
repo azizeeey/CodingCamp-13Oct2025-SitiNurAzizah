@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
+    <div id="notification" class="notification-popup"></div>
     <button id="theme-toggle-btn" class="theme-toggle-btn" title="Toggle Dark/Light Mode">
         <i class="fas fa-moon"></i> 
     </button>
@@ -32,6 +33,10 @@
                 <span class="stat-value progress" id="progress-percent">0%</span>
             </div>
         </header>
+        
+        <div class="progress-bar-container">
+            <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div>
+        </div>
 
         <form id="todo-form" class="input-section">
             <input type="text" id="todo-input" placeholder="Add a todo . . ." required>
