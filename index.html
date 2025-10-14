@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siti's To-Do App</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <button id="theme-toggle-btn" class="theme-toggle-btn" title="Toggle Dark/Light Mode">
+        <i class="fas fa-moon"></i> 
+    </button>
+
+    <div class="container">
+        <header class="summary-card">
+            <div class="stat-item">
+                <span class="stat-label">TOTAL TASKS</span>
+                <span class="stat-value" id="total-tasks">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">COMPLETED</span>
+                <span class="stat-value completed" id="completed-tasks">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">PENDING</span>
+                <span class="stat-value pending" id="pending-tasks">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">PROGRESS</span>
+                <span class="stat-value progress" id="progress-percent">0%</span>
+            </div>
+        </header>
+
+        <form id="todo-form" class="input-section">
+            <input type="text" id="todo-input" placeholder="Add a todo . . ." required>
+            <input type="date" id="date-input" required>
+            <button type="submit" class="add-button"><i class="fas fa-plus"></i></button>
+        </form>
+
+        <div class="controls-section">
+            <input type="text" id="search-input" placeholder="Search tasks...">
+            <select id="filter-status">
+                <option value="all">FILTER (All)</option>
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+            </select>
+            <button id="delete-all-btn" class="delete-all-btn">DELETE ALL</button>
+        </div>
+
+        <div class="task-list-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>TASK</th>
+                        <th>DUE DATE</th>
+                        <th>STATUS</th>
+                        <th>ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody id="task-list">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
