@@ -3,6 +3,12 @@
    ==================================== */
 :root {
     /* Light Mode Variables */
+    --color-primary: #ff69b4; /* Pink */
+    --color-secondary: #5e35b1; /* UNGU BARU */
+    --color-success: #5cb85c;
+    --color-pending: #f0ad4e;
+    --color-danger: #d9534f;
+    
     --bg-main: linear-gradient(to right bottom, #f0f0f0, #e0e0e0);
     --bg-container: #ffffff;
     --bg-summary: #f7f9fc;
@@ -12,7 +18,6 @@
     --border-dark: #ddd;
     --table-header-bg: #f7f9fc;
     --table-row-hover: #fafafa;
-    --icon-color: #666;
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
@@ -27,7 +32,6 @@
     --border-dark: #444444;
     --table-header-bg: #252525;
     --table-row-hover: #2a2a2a;
-    --icon-color: #ccc;
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
@@ -54,12 +58,12 @@ body {
     padding: 30px;
     border-radius: 20px;
     box-shadow: var(--shadow);
-    max-width: 900px;
+    max-width: 950px; 
     width: 95%;
 }
 
 .theme-toggle-btn {
-    align-self: flex-end; /* Posisikan tombol di kanan atas */
+    align-self: flex-end; 
     margin-right: 5%;
     background: none;
     border: none;
@@ -67,56 +71,72 @@ body {
     cursor: pointer;
     color: var(--text-primary);
     margin-bottom: 20px;
-    transition: color 0.3s;
+    transition: color 0.3s, transform 0.2s; 
 }
 
+.theme-toggle-btn:hover {
+    color: var(--color-primary); 
+    transform: rotate(15deg); 
+}
+.theme-toggle-btn:active {
+    transform: scale(0.9);
+    transition: transform 0.1s;
+}
 
 /* ====================================
-   3. Header & Summary Section
+   3. Header & Summary Section (REVISI ESTETIKA)
    ==================================== */
 .summary-card {
     display: flex;
-    justify-content: space-around;
-    padding: 20px;
+    justify-content: space-between; 
+    padding: 20px 0;
     margin-bottom: 30px;
     border-radius: 15px;
     background-color: var(--bg-summary);
     border: 1px solid var(--border-light);
 }
 
-.stat-item {
-    text-align: center;
+.stat-item { 
+    text-align: center; 
+    flex-grow: 1;
+    padding: 0 15px; 
+    border-right: 1px solid var(--border-light);
+}
+.summary-card .stat-item:last-child {
+    border-right: none;
 }
 
 .stat-label {
-    display: block;
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 700; /* Bold */
     color: var(--text-secondary);
+    display: block; 
     margin-bottom: 5px;
 }
 
 .stat-value {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 700;
-    color: var(--text-primary);
+    display: block; 
 }
 
-/* Specific colors remain fixed for visibility */
-.stat-value.completed { color: #5cb85c; }
-.stat-value.pending { color: #f0ad4e; }
-.stat-value.progress { color: #007bff; }
+/* Warna Baru */
+.stat-value.total { color: var(--color-secondary); } /* Ungu */
+.stat-value.completed { color: var(--color-success); }
+.stat-value.pending { color: var(--color-pending); }
+.stat-value.progress { color: var(--color-secondary); } /* Ungu */
 
 
 /* ====================================
-   4. Input Form & Controls
+   4. Input Form & Status Indicator
    ==================================== */
 .input-section {
     display: flex;
     gap: 10px;
-    margin-bottom: 30px;
+    margin-bottom: 10px; 
 }
 
-#todo-input, #date-input, #search-input, #filter-status {
+#todo-input, #date-input {
     padding: 12px 15px;
     border: 1px solid var(--border-dark);
     border-radius: 8px;
@@ -129,7 +149,7 @@ body {
 #date-input { width: 150px; }
 
 .add-button {
-    background-color: #ff69b4; 
+    background-color: var(--color-primary); 
     color: white;
     border: none;
     padding: 12px 18px;
@@ -140,6 +160,45 @@ body {
 
 .add-button:hover { background-color: #e65a9e; }
 
+/* Status Indikator untuk Edit/Subtask */
+.input-status-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background-color: var(--color-secondary);
+    color: white;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+.input-status-indicator strong {
+    font-weight: 600;
+    margin-left: 5px;
+}
+#status-mode-name {
+    color: var(--color-primary); /* Warna untuk mode */
+}
+#status-target-name {
+    color: white; /* Warna untuk target task */
+}
+.cancel-input-mode {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 18px;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+.cancel-input-mode:hover {
+    opacity: 1;
+}
+
+
+/* ====================================
+   5. Controls & Filter Dropdown
+   ==================================== */
 .controls-section {
     display: flex;
     gap: 10px;
@@ -147,15 +206,17 @@ body {
     align-items: center;
 }
 
-#search-input { flex-grow: 1; }
-
-#filter-status {
+#search-input { 
+    flex-grow: 1; 
+    padding: 12px 15px;
+    border: 1px solid var(--border-dark);
+    border-radius: 8px;
     background-color: var(--bg-container);
-    cursor: pointer;
+    color: var(--text-primary);
 }
 
 .delete-all-btn {
-    background-color: #d9534f;
+    background-color: var(--color-danger);
     color: white;
     border: none;
     padding: 10px 15px;
@@ -167,22 +228,97 @@ body {
 
 .delete-all-btn:hover { background-color: #c9302c; }
 
+
+/* --- Filter Dropdown Styles --- */
+.filter-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.filter-btn {
+    background-color: var(--bg-container);
+    color: var(--text-primary);
+    border: 1px solid var(--border-dark);
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    /* Tambahkan style untuk icon */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.filter-btn span {
+    font-weight: 600;
+}
+
+/* Warna Button Filter Sesuai Status Aktif */
+.filter-btn.all {
+    background-color: var(--bg-container);
+    color: var(--color-secondary);
+    border-color: var(--color-secondary);
+}
+.filter-btn.pending {
+    background-color: var(--color-pending);
+    color: white;
+    border-color: var(--color-pending);
+}
+.filter-btn.completed {
+    background-color: var(--color-success);
+    color: white;
+    border-color: var(--color-success);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    margin-top: 5px;
+    background-color: var(--bg-container);
+    box-shadow: var(--shadow);
+    border-radius: 8px;
+    min-width: 170px;
+    z-index: 100;
+    overflow: hidden;
+}
+
+.dropdown-menu.show-dropdown { display: block; }
+
+.dropdown-menu a {
+    color: var(--text-primary);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.dropdown-menu a:hover { background-color: var(--table-row-hover); }
+
+.dropdown-menu a.active {
+    font-weight: 700;
+    color: var(--color-primary);
+    background-color: var(--table-header-bg);
+}
+
 /* ====================================
-   5. Task List Table
+   6. Task List Table & Sub-Task
    ==================================== */
 .task-list-container { overflow-x: auto; }
 
 table {
     width: 100%;
     border-collapse: separate;
-    border-spacing: 0 10px;
+    border-spacing: 0 8px; 
+    table-layout: fixed; 
 }
 
 th, td {
     padding: 15px;
     text-align: left;
     border-bottom: 1px solid var(--border-dark);
-    transition: border-bottom-color 0.3s;
 }
 
 thead th {
@@ -193,12 +329,27 @@ thead th {
 
 tbody tr {
     background-color: var(--bg-container);
-    transition: background-color 0.3s;
+    border-radius: 8px; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); 
+}
+tbody tr:hover { background-color: var(--table-row-hover); }
+
+/* Style Sub-Task Row */
+.sub-task-row {
+    background-color: var(--bg-summary); 
+    font-size: 14px;
+}
+.sub-task-row .task-text {
+    padding-left: 30px; 
+    font-style: italic;
+}
+.subtask-icon {
+    font-size: 10px;
+    margin-right: 5px;
+    color: var(--color-secondary);
+    transform: rotate(90deg);
 }
 
-tbody tr:hover {
-    background-color: var(--table-row-hover);
-}
 
 /* Status Badges */
 .status-badge {
@@ -210,36 +361,137 @@ tbody tr:hover {
 
 .pending-status {
     background-color: #f0ad4e30;
-    color: #f0ad4e;
+    color: var(--color-pending);
 }
 
 .completed-status {
     background-color: #5cb85c30;
-    color: #5cb85c;
-    text-decoration: line-through;
-}
+    color: var(--color-success);
+} 
 
-/* Action Buttons */
+/* Action Buttons - Perubahan Icon/Warna */
 .action-buttons button {
     background: none;
     border: none;
     cursor: pointer;
-    margin-left: 5px;
+    margin-left: 2px; 
     font-size: 16px;
-    color: var(--icon-color);
-    transition: color 0.3s;
+    padding: 5px;
+    transition: transform 0.2s;
+}
+.action-buttons button:hover {
+    transform: scale(1.1);
 }
 
-.action-buttons .complete-btn:hover { color: #5cb85c; }
-.action-buttons .delete-btn:hover { color: #d9534f; }
+/* 4 Icon Warna Berbeda */
+.action-buttons .subtask-btn { color: var(--color-primary); } 
+.action-buttons .complete-btn { color: var(--color-success); } 
+.action-buttons .edit-btn { color: #007bff; } 
+.action-buttons .delete-btn { color: var(--color-danger); } 
 
+
+/* Style untuk task yang sudah selesai */
 .task-completed .task-text {
     text-decoration: line-through;
     color: var(--text-secondary);
 }
+.task-completed .status-badge {
+    text-decoration: none; 
+}
+
+/* Disable State (Bug 2 Fix) */
+.action-buttons button[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    pointer-events: none; /* Penting agar tidak ada event listener yang ter-trigger */
+}
+.action-buttons button[disabled]:hover {
+    transform: none;
+}
+/* Delete tetap aktif */
+.action-buttons .delete-btn {
+    pointer-events: auto !important; 
+    opacity: 1 !important;
+}
+
 
 /* ====================================
-   6. Notification Popup Styles
+   7. Progress Bar Styles
+   ==================================== */
+.progress-bar-container {
+    height: 10px;
+    background-color: var(--border-light); 
+    border-radius: 5px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    transition: background-color 0.3s;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(to right, #7958b9, var(--color-secondary)); /* Gradient Ungu */
+    border-radius: 5px;
+    transition: width 0.5s ease-in-out;
+}
+
+/* ====================================
+   8. Universal Modal Styles
+   ==================================== */
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 1001; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5); 
+    backdrop-filter: blur(3px); 
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.show { display: flex; }
+
+.modal-content {
+    background-color: var(--bg-container);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    max-width: 450px;
+    width: 90%;
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Modal Actions (Button) */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+.modal-cancel, .modal-delete {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+.modal-cancel { background-color: transparent; color: var(--text-secondary); }
+.modal-delete { background-color: var(--color-danger); color: white; }
+.modal-delete:hover { background-color: #c9302c; }
+
+
+/* ====================================
+   9. Notification Popup Styles
    ==================================== */
 .notification-popup {
     position: fixed;
@@ -261,41 +513,7 @@ tbody tr:hover {
     transform: translateY(0);
 }
 
-.notification-popup.success {
-    background-color: #5cb85c; /* Green for success */
-}
-
-.notification-popup.info {
-    background-color: #007bff; /* Blue for info/edit */
-}
-
-.notification-popup.danger {
-    background-color: #d9534f; /* Red for delete/error */
-}
-
-/* Modifikasi tombol edit */
-.action-buttons .edit-btn:hover { color: #007bff; }
-
-/* ====================================
-   7. Progress Bar Styles
-   ==================================== */
-.progress-bar-container {
-    height: 10px;
-    background-color: var(--border-light); /* Latar belakang bar */
-    border-radius: 5px;
-    margin-bottom: 30px;
-    overflow: hidden;
-    transition: background-color 0.3s;
-}
-
-.progress-bar-fill {
-    height: 100%;
-    background: linear-gradient(to right, #66bb6a, #4caf50); /* Gradient hijau */
-    border-radius: 5px;
-    transition: width 0.5s ease-in-out;
-}
-
-/* Penyesuaian Dark Mode pada Progress Bar */
-.dark-theme .progress-bar-container {
-    background-color: var(--border-dark);
-}
+.notification-popup.success { background-color: var(--color-success); }
+.notification-popup.info { background-color: #007bff; }
+.notification-popup.danger { background-color: var(--color-danger); }
+.notification-popup.pending { background-color: var(--color-pending); }

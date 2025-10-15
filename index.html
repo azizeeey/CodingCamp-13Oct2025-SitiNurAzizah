@@ -10,6 +10,7 @@
 </head>
 <body>
     <div id="notification" class="notification-popup"></div>
+    
     <button id="theme-toggle-btn" class="theme-toggle-btn" title="Toggle Dark/Light Mode">
         <i class="fas fa-moon"></i> 
     </button>
@@ -18,7 +19,7 @@
         <header class="summary-card">
             <div class="stat-item">
                 <span class="stat-label">TOTAL TASKS</span>
-                <span class="stat-value" id="total-tasks">0</span>
+                <span class="stat-value total" id="total-tasks">0</span> 
             </div>
             <div class="stat-item">
                 <span class="stat-label">COMPLETED</span>
@@ -40,17 +41,34 @@
 
         <form id="todo-form" class="input-section">
             <input type="text" id="todo-input" placeholder="Add a todo . . ." required>
-            <input type="date" id="date-input" required>
-            <button type="submit" class="add-button"><i class="fas fa-plus"></i></button>
+            <input type="date" id="date-input" required> 
+            <button type="submit" id="add-task-btn" class="add-button"><i class="fas fa-plus"></i></button>
+            
+            <input type="hidden" id="current-task-id"> 
+            <input type="hidden" id="current-parent-id"> 
+            <input type="hidden" id="input-mode" value="add"> 
         </form>
+        
+        <div id="input-status-indicator" class="input-status-indicator" style="display: none;">
+            <span>Current Mode: <strong id="status-mode-name"></strong> for <strong id="status-target-name"></strong></span>
+            <button id="cancel-input-mode" class="cancel-input-mode"><i class="fas fa-times"></i></button>
+        </div>
+
 
         <div class="controls-section">
             <input type="text" id="search-input" placeholder="Search tasks...">
-            <select id="filter-status">
-                <option value="all">SORT</option>
-                <option value="pending">Pending</option>
-                <option value="completed">Completed</option>
-            </select>
+            
+            <div class="filter-dropdown">
+                <button id="filter-btn" class="filter-btn">
+                    <i class="fas fa-filter"></i> <span>ALL</span>
+                </button>
+                <div id="filter-menu" class="dropdown-menu">
+                    <a href="#" data-filter="all" class="active"><i class="fas fa-list-ul"></i> All Tasks</a>
+                    <a href="#" data-filter="pending"><i class="fas fa-clock"></i> Pending</a>
+                    <a href="#" data-filter="completed"><i class="fas fa-check-circle"></i> Completed</a>
+                </div>
+            </div>
+            
             <button id="delete-all-btn" class="delete-all-btn">DELETE ALL</button>
         </div>
 
@@ -58,15 +76,26 @@
             <table>
                 <thead>
                     <tr>
-                        <th>TASK</th>
-                        <th>DUE DATE</th>
-                        <th>STATUS</th>
-                        <th>ACTIONS</th>
+                        <th style="width: 40%;">TASK</th>
+                        <th style="width: 20%;">DUE DATE</th>
+                        <th style="width: 15%;">STATUS</th>
+                        <th style="width: 25%;">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody id="task-list">
                     </tbody>
             </table>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="confirm-title">Delete Task</h2>
+            <p id="confirm-message">Are you sure you want to delete this task? This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button class="modal-cancel">CANCEL</button>
+                <button id="modal-delete-btn" class="modal-delete">DELETE</button>
+            </div>
         </div>
     </div>
 
