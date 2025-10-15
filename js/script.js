@@ -196,18 +196,19 @@ document.addEventListener('DOMContentLoaded', () => {
         showNotification("Task Edited Successfully!", 'info');
     }
 
-    filterStatus.addEventListener('change', renderTodos);
-
-    searchInput.addEventListener('input', renderTodos);
-
+    // 4. Delete all tasks
     deleteAllBtn.addEventListener('click', () => {
-        if (confirm("Are you sure you want to delete ALL tasks? This cannot be undone.")) {
+        if (confirm("Are you sure want to delete ALL TASKS? This cannot be undone.")) {
             todos = [];
             saveTodos();
             renderTodos();
             showNotification("All Tasks Deleted!", 'danger');
         }
-    });
+    })
+
+    // 5. Filter & Search
+    filterStatus.addEventListener('change', renderTodos);
+    searchInput.addEventListener('input', renderTodos);
 
     loadTheme();
     renderTodos();
