@@ -51,6 +51,8 @@ body {
     align-items: center;
     min-height: 100vh;
     transition: background-color 0.3s;
+    /* FIX: Mencegah Horizontal Scroll/Meluber */
+    overflow-x: hidden; 
 }
 
 .container {
@@ -58,13 +60,16 @@ body {
     padding: 30px;
     border-radius: 20px;
     box-shadow: var(--shadow);
-    max-width: 950px; 
-    width: 95%;
+    max-width: 1200px; 
+    width: 90%; 
+    margin-bottom: 20px; 
+    padding-right: 30px; 
+    position: relative; 
 }
 
 .theme-toggle-btn {
     align-self: flex-end; 
-    margin-right: 5%;
+    margin-right: calc(5% + 15px); 
     background: none;
     border: none;
     font-size: 24px;
@@ -83,8 +88,25 @@ body {
     transition: transform 0.1s;
 }
 
+/* Credit Footer */
+.credit-footer {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 10px;
+    text-align: center;
+    padding-bottom: 20px;
+}
+.developer-name {
+    color: var(--color-secondary);
+    text-decoration: none;
+    font-weight: 600;
+}
+.developer-name:hover {
+    text-decoration: underline;
+}
+
 /* ====================================
-   3. Header & Summary Section (REVISI ESTETIKA)
+   3. Header & Summary Section 
    ==================================== */
 .summary-card {
     display: flex;
@@ -108,7 +130,7 @@ body {
 
 .stat-label {
     font-size: 13px;
-    font-weight: 700; /* Bold */
+    font-weight: 700; 
     color: var(--text-secondary);
     display: block; 
     margin-bottom: 5px;
@@ -120,11 +142,10 @@ body {
     display: block; 
 }
 
-/* Warna Baru */
-.stat-value.total { color: var(--color-secondary); } /* Ungu */
+.stat-value.total { color: var(--color-secondary); } 
 .stat-value.completed { color: var(--color-success); }
 .stat-value.pending { color: var(--color-pending); }
-.stat-value.progress { color: var(--color-secondary); } /* Ungu */
+.stat-value.progress { color: var(--color-secondary); } 
 
 
 /* ====================================
@@ -134,6 +155,8 @@ body {
     display: flex;
     gap: 10px;
     margin-bottom: 10px; 
+    padding-right: 0; 
+    position: static; 
 }
 
 #todo-input, #date-input {
@@ -156,11 +179,14 @@ body {
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s;
+    position: static; 
+    height: auto;
+    width: auto; 
+    border-radius: 8px; 
 }
 
 .add-button:hover { background-color: #e65a9e; }
 
-/* Status Indikator untuk Edit/Subtask */
 .input-status-indicator {
     display: flex;
     align-items: center;
@@ -177,10 +203,10 @@ body {
     margin-left: 5px;
 }
 #status-mode-name {
-    color: var(--color-primary); /* Warna untuk mode */
+    color: var(--color-primary); 
 }
 #status-target-name {
-    color: white; /* Warna untuk target task */
+    color: white; 
 }
 .cancel-input-mode {
     background: none;
@@ -224,6 +250,7 @@ body {
     cursor: pointer;
     transition: background-color 0.3s;
     font-weight: 600;
+    min-width: 100px;
 }
 
 .delete-all-btn:hover { background-color: #c9302c; }
@@ -233,6 +260,7 @@ body {
 .filter-dropdown {
     position: relative;
     display: inline-block;
+    min-width: 100px; 
 }
 
 .filter-btn {
@@ -244,16 +272,13 @@ body {
     cursor: pointer;
     font-weight: 600;
     transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-    /* Tambahkan style untuk icon */
     display: flex;
     align-items: center;
     gap: 8px;
-}
-.filter-btn span {
-    font-weight: 600;
+    width: 100%;
+    justify-content: center;
 }
 
-/* Warna Button Filter Sesuai Status Aktif */
 .filter-btn.all {
     background-color: var(--bg-container);
     color: var(--color-secondary);
@@ -350,6 +375,18 @@ tbody tr:hover { background-color: var(--table-row-hover); }
     transform: rotate(90deg);
 }
 
+/* Subtask count di Parent Task */
+.subtask-count {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-left: 5px;
+    background-color: var(--border-light);
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
 
 /* Status Badges */
 .status-badge {
@@ -383,7 +420,6 @@ tbody tr:hover { background-color: var(--table-row-hover); }
     transform: scale(1.1);
 }
 
-/* 4 Icon Warna Berbeda */
 .action-buttons .subtask-btn { color: var(--color-primary); } 
 .action-buttons .complete-btn { color: var(--color-success); } 
 .action-buttons .edit-btn { color: #007bff; } 
@@ -399,12 +435,12 @@ tbody tr:hover { background-color: var(--table-row-hover); }
     text-decoration: none; 
 }
 
-/* Disable State (Bug 2 Fix) */
+/* Disable State */
 .action-buttons button[disabled] {
     opacity: 0.4;
     cursor: not-allowed;
     transform: none;
-    pointer-events: none; /* Penting agar tidak ada event listener yang ter-trigger */
+    pointer-events: none; 
 }
 .action-buttons button[disabled]:hover {
     transform: none;
@@ -470,7 +506,6 @@ tbody tr:hover { background-color: var(--table-row-hover); }
     to { opacity: 1; transform: scale(1); }
 }
 
-/* Modal Actions (Button) */
 .modal-actions {
     display: flex;
     justify-content: flex-end;
@@ -517,3 +552,155 @@ tbody tr:hover { background-color: var(--table-row-hover); }
 .notification-popup.info { background-color: #007bff; }
 .notification-popup.danger { background-color: var(--color-danger); }
 .notification-popup.pending { background-color: var(--color-pending); }
+
+
+/* ====================================
+   10. Responsiveness (Fix Dashboard dan Input Compact)
+   ==================================== */
+
+/* Untuk tablet dan layar yang lebih kecil (<= 1000px) */
+@media (max-width: 1000px) {
+    .container {
+        width: 95%; 
+    }
+    .theme-toggle-btn {
+        margin-right: 2.5%; 
+    }
+}
+
+/* Untuk perangkat mobile (Layar kompak <= 768px) */
+@media (max-width: 768px) {
+    body {
+        padding: 15px 0; 
+    }
+    
+    .container {
+        padding: 10px; 
+        width: 99%; 
+    }
+    
+    /* FIX DASHBOARD CARD */
+    .summary-card {
+        padding: 5px 0; 
+        margin-bottom: 15px;
+        flex-wrap: nowrap; 
+    }
+    .stat-item {
+        /* Padding Horizontal Dihilangkan total */
+        padding: 0; 
+    }
+    
+    .stat-label {
+        /* Font size sangat kecil, pastikan tidak wrap */
+        font-size: 7px; 
+        font-weight: 600;
+        margin-bottom: 1px; 
+        white-space: nowrap; 
+        overflow: hidden;
+        text-overflow: ellipsis;
+        /* Biarkan flex-grow mengambil alih lebar */
+        min-width: 0; 
+    }
+    .stat-value {
+        font-size: 14px; 
+        font-weight: 700;
+        white-space: nowrap;
+    }
+    .stat-item i {
+        display: none; 
+    }
+
+    /* Input Section Fix */
+    .input-section {
+        flex-wrap: nowrap; 
+        gap: 3px; 
+        align-items: stretch;
+    }
+    
+    #todo-input {
+        flex-grow: 1;
+        flex-basis: 50%; 
+        padding: 8px 10px;
+        font-size: 14px;
+        min-width: 0; 
+    }
+    #date-input {
+        flex-grow: 0; 
+        /* Lebar dikurangi sedikit lagi agar tombol + muat */
+        flex-basis: 33%; 
+        width: auto; 
+        min-width: 90px; /* Biarkan min-width rendah */
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+    .add-button {
+        /* Width dan min-width tetap kecil */
+        width: 35px; 
+        min-width: 35px; 
+        padding: 8px; 
+        height: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .add-button i {
+        font-size: 14px;
+    }
+    
+    /* Controls Section */
+    .controls-section {
+        flex-wrap: wrap; 
+        gap: 6px; 
+        margin-bottom: 15px;
+    }
+    #search-input {
+        order: 1; 
+        flex-basis: 100%; 
+        padding: 8px 10px; 
+    }
+    .filter-dropdown {
+        order: 2;
+        flex-grow: 1; 
+    }
+    .delete-all-btn {
+        order: 3;
+        flex-grow: 1;
+        padding: 8px 8px;
+        font-size: 12px;
+        min-width: auto;
+    }
+
+    /* Tabel */
+    table {
+        min-width: 500px; 
+    }
+    .task-list-container {
+        overflow-x: auto; 
+    }
+    th, td {
+        padding: 8px 4px; 
+        font-size: 13px;
+    }
+    thead th {
+        font-size: 11px;
+    }
+    .action-buttons button {
+        font-size: 11px;
+        padding: 1px;
+    }
+    .subtask-count {
+        font-size: 9px;
+    }
+    
+    .theme-toggle-btn {
+        margin-right: 1.5%; 
+    }
+    
+    /* Notification di mobile */
+     .notification-popup {
+        top: 10px;
+        right: 10px;
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+}
