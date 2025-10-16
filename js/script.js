@@ -8,14 +8,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const deleteAllBtn = document.getElementById('delete-all-btn');
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
     const body = document.body;
-    const notificationElement = document.getElementById('notification');
-    const addTaskBtn = document.getElementById('add-task-btn');
+    const addTaskBtn = document.getElementById('add-task-btn'); 
 
     // Filter Dropdown Elements
     const filterBtn = document.getElementById('filter-btn');
     const filterMenu = document.getElementById('filter-menu');
     let currentFilter = 'all'; 
-
+    
     // Input Mode Elements
     const currentTaskId = document.getElementById('current-task-id');
     const currentParentId = document.getElementById('current-parent-id');
@@ -24,12 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusTargetName = document.getElementById('status-target-name');
     const statusModeName = document.getElementById('status-mode-name'); 
     const cancelInputModeBtn = document.getElementById('cancel-input-mode');
-    
+
+    const notificationElement = document.getElementById('notification');
     // Modal Elements
     const confirmModal = document.getElementById('confirm-modal');
     const modalDeleteBtn = document.getElementById('modal-delete-btn');
     const modalCancelBtns = document.querySelectorAll('.modal-cancel');
-    let actionTarget = null; 
+    let actionTarget = null;
 
     // Ambil data dari Local Storage
     let todos = JSON.parse(localStorage.getItem('todos')) || [];
@@ -116,6 +116,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const disableIfCompleted = task.completed ? 'disabled' : '';
         const disableComplete = task.completed ? 'disabled' : ''; 
         
+        // Add a class for parent tasks to handle clicks for collapsing
+        if (!isSubtask) {
+            row.classList.add('task-parent-row');
+            // If the task is expanded, add the class on creation
+            if (task.isExpanded) {
+                row.classList.add('expanded');
+            }
+        }
+
         let actionButtonsHTML = '';
         let taskTextContent = task.text;
 
@@ -123,7 +132,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isSubtask && task.subtasks && task.subtasks.length > 0) {
             const completedSubtasks = task.subtasks.filter(st => st.completed).length;
             const totalSubtasks = task.subtasks.length;
-            taskTextContent += ` <span class="subtask-count">(${completedSubtasks}/${totalSubtasks})</span>`;
+            // Add a toggle icon for parent tasks with subtasks
+            taskTextContent = `
+                <i class="fas fa-chevron-right task-toggle-icon"></i> 
+                ${task.text} 
+                <span class="subtask-count">(${completedSubtasks}/${totalSubtasks})</span>
+            `;
         }
         
         if (isSubtask) {
@@ -171,60 +185,61 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderTodos() {
         taskList.innerHTML = '';
-        const filterText = searchInput.value.toLowerCase();
         
-        const filteredTodos = todos.filter(todo => {
-            const matchesText = todo.text.toLowerCase().includes(filterText);
-            
-            // Filter Status hanya berlaku untuk Task Parent (Task Utama)
-            const matchesStatus = currentFilter === 'all' || 
-                                  (currentFilter === 'completed' && todo.completed) || 
-                                  (currentFilter === 'pending' && !todo.completed);
-            
-            // Cek subtask match (hanya text search, untuk menampilkan parent di mode search)
-            const subtaskMatchesSearch = todo.subtasks && todo.subtasks.some(st => st.text.toLowerCase().includes(filterText));
-            
-            // Task parent ditampilkan jika (match text dan status filter) ATAU (subtasknya match text search)
-            return (matchesText && matchesStatus) || subtaskMatchesSearch;
+        // Sort before filtering
+        let currentSort = 'asc'; // or 'desc'
+        todos.sort((a, b) => {
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return currentSort === 'asc' ? dateA - dateB : dateB - dateA;
         });
 
-        filteredTodos.forEach(todo => {
-            
-            // Logic Display Task Parent
-            const taskMatchesStatus = currentFilter === 'all' || 
-                                      (currentFilter === 'completed' && todo.completed) || 
-                                      (currentFilter === 'pending' && !todo.completed);
-            
-            if (taskMatchesStatus && todo.text.toLowerCase().includes(filterText)) {
-                taskList.appendChild(createTaskRow(todo, false));
+        const filterText = searchInput.value.toLowerCase();
+        
+        todos.forEach(todo => {
+            const parentMatchesSearch = todo.text.toLowerCase().includes(filterText);
+            const subtasksMatchingSearch = todo.subtasks ? todo.subtasks.filter(st => st.text.toLowerCase().includes(filterText)) : [];
+
+            const parentMatchesStatus = currentFilter === 'all' || 
+                                        (currentFilter === 'completed' && todo.completed) ||
+                                        (currentFilter === 'pending' && !todo.completed);
+
+            // Show parent if it matches search and status, OR if any of its subtasks match search and status
+            let shouldShowParent = parentMatchesSearch && parentMatchesStatus;
+
+            const visibleSubtasks = subtasksMatchingSearch.filter(st => {
+                const subtaskMatchesStatus = currentFilter === 'all' ||
+                                             (currentFilter === 'completed' && st.completed) ||
+                                             (currentFilter === 'pending' && !st.completed);
+                return subtaskMatchesStatus;
+            });
+
+            if (visibleSubtasks.length > 0) {
+                shouldShowParent = true; // Always show parent if subtasks are visible
             }
 
-            // Logic Display Sub-Tasks
-            if (todo.subtasks && todo.subtasks.length > 0) {
-                todo.subtasks.forEach(subtask => {
-                    // Subtask harus memenuhi filter status global
-                    const matchesStatus = currentFilter === 'all' || 
-                                          (currentFilter === 'completed' && subtask.completed) || 
-                                          (currentFilter === 'pending' && !subtask.completed);
-                    
-                    const matchesText = subtask.text.toLowerCase().includes(filterText);
-                    
-                    // Render subtask jika memenuhi filter status DAN filter text
-                    if (matchesStatus && matchesText) {
-                        taskList.appendChild(createTaskRow(subtask, true, todo.id));
-                    }
-                });
+            if (shouldShowParent) {
+                const parentRow = createTaskRow(todo);
+                taskList.appendChild(parentRow);
+
+                // Render only the subtasks that should be visible
+                if (todo.subtasks) {
+                    visibleSubtasks.forEach(subtask => {
+                        const subtaskRow = createTaskRow(subtask, true, todo.id);
+                        if (todo.isExpanded) {
+                            subtaskRow.classList.add('parent-expanded');
+                        }
+                        taskList.appendChild(subtaskRow);
+                    });
+                }
             }
         });
 
         updateSummary();
-        updateFilterButton();
     }
     
-    // Fungsi untuk memperbarui Summary (HANYA HITUNG TASK PARENT)
     function updateSummary() {
-        
-        const parentTasks = todos; // Hanya task utama
+        const parentTasks = todos;
 
         const total = parentTasks.length;
         const completed = parentTasks.filter(t => t.completed).length;
@@ -250,20 +265,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const anySubtaskPending = parentTask.subtasks.some(st => !st.completed);
         const hasSubtasks = parentTask.subtasks.length > 0;
 
-        if (hasSubtasks) {
-            // Jika ada subtask yang pending, parent harus pending
-            if (anySubtaskPending && parentTask.completed) {
-                parentTask.completed = false;
-                showNotification(`Parent task un-completed because a sub-task is pending.`, 'pending');
-            } 
-            // Jika semua subtask selesai, parent harus complete
-            else if (!anySubtaskPending && !parentTask.completed) {
-                parentTask.completed = true;
-                showNotification(`Task "${parentTask.text}" auto-completed!`, 'success');
-            }
+        if (hasSubtasks && !anySubtaskPending && !parentTask.completed) {
+            parentTask.completed = true;
+            showNotification(`Task "${parentTask.text}" auto-completed!`, 'success');
+        } else if (anySubtaskPending && parentTask.completed) {
+            parentTask.completed = false;
+            showNotification(`Task "${parentTask.text}" marked as pending as a sub-task is not complete.`, 'info');
         }
-        // Pastikan render ulang untuk update hitungan subtask di parent row
-        renderTodos(); 
+
+        saveTodos();
+        renderTodos();
     }
     
     // Logika Completed Manual
@@ -271,19 +282,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const { task } = findTaskById(id, parentId);
         if (!task) return;
 
-        // Toggle status
         task.completed = !task.completed;
         
         if (task.completed) {
             showNotification(`Task marked as Completed`, 'success');
         } else {
-            showNotification(`Task marked as Pending`, 'pending');
+            showNotification(`Task marked as Pending`, 'info');
         }
 
-        // Jika task utama diklik:
         if (!parentId) {
             if (task.subtasks) {
-                // Semua subtask ikut status parent
                 const subtasksChanged = task.subtasks.some(st => st.completed !== task.completed);
                 task.subtasks.forEach(st => st.completed = task.completed);
                 if(subtasksChanged) {
@@ -292,7 +300,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        // Jika yang di-klik adalah sub-task, cek parent-nya
         if (parentId) {
             checkParentCompletion(parentId);
         }
@@ -304,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Input Form Handler (Add, Edit, Subtask) ---
     todoForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        
+
         const text = todoInput.value.trim();
         const date = dateInput.value;
         const mode = inputMode.value;
@@ -322,44 +329,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 text: text,
                 date: date,
                 completed: false,
+                isExpanded: false, // Add isExpanded property
                 subtasks: []
             };
             todos.push(newTodo);
             showNotification("Task Added Successfully!", 'success');
-
-        } else if (mode === 'edit') {
-            const { task } = findTaskById(id, parentId);
-            if (task) {
-                task.text = text;
-                task.date = date; // Subtask juga bisa ganti tanggal
-                showNotification("Task/Sub-Task Edited Successfully!", 'info');
-                
-                if (parentId) {
-                    checkParentCompletion(parentId);
-                }
-            }
-            
         } else if (mode === 'subtask') {
             const parent = todos.find(t => t.id === id);
             if (parent) {
                 const newSubtask = {
                     id: Date.now(),
                     text: text,
-                    date: date, // Subtask memiliki deadline sendiri
+                    date: date,
                     completed: false
                 };
                 parent.subtasks.push(newSubtask);
-                
-                // Jika parent sebelumnya complete, set ke pending
-                if (parent.completed) {
-                    parent.completed = false;
-                    showNotification(`Parent task un-completed, new sub-task added.`, 'pending');
-                } 
-                
                 showNotification("Sub-Task Added!", 'success');
             }
+        } else if (mode === 'edit') {
+            const { task: taskToEdit } = findTaskById(id, parentId);
+            if (taskToEdit) {
+                taskToEdit.text = text;
+                taskToEdit.date = date;
+                showNotification("Task Updated Successfully!", 'success');
+            } else {
+                showNotification("Error: Task not found for editing.", 'danger');
+            }
         }
-        
+
         resetInputMode();
         saveTodos();
         renderTodos();
@@ -367,9 +364,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Task List Click Handler (Action Buttons) ---
     taskList.addEventListener('click', (e) => {
+        // Handle clicks on the chevron icon for collapsing/expanding subtasks FIRST
+        if (e.target.classList.contains('task-toggle-icon')) {
+            const parentRow = e.target.closest('.task-parent-row');
+            const parentId = parentRow ? parseInt(parentRow.dataset.id) : null;
+            
+            if (parentId) {
+                const parentTask = todos.find(t => t.id === parentId);
+                if (parentTask) {
+                    parentTask.isExpanded = !parentTask.isExpanded; // Toggle the state in the data
+                    saveTodos(); // Save the new state
+                    renderTodos(); // Re-render to reflect the change
+                }
+            }
+            return; // Stop further execution after handling the toggle
+        }
+
+        // THEN, handle action buttons
         const targetBtn = e.target.closest('button');
-        
-        // Cek disabled (kecuali untuk delete button, karena delete tetap harus berfungsi)
         if (!targetBtn || (targetBtn.disabled && !targetBtn.classList.contains('delete-btn'))) return; 
         
         const id = parseInt(targetBtn.dataset.id);
@@ -509,15 +521,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Filter & Search Logic ---
-    function updateFilterButton() {
-        const filterTextMap = {
-            'all': 'ALL',
-            'pending': 'PENDING',
-            'completed': 'COMPLETED'
-        };
-        filterBtn.innerHTML = `<i class="fas fa-filter"></i> <span>${filterTextMap[currentFilter]}</span>`;
-        filterBtn.className = `filter-btn ${currentFilter}`; 
-    }
 
     filterBtn.addEventListener('click', () => {
         filterMenu.classList.toggle('show-dropdown');
@@ -528,10 +531,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const link = e.target.closest('a');
         if (link) {
             currentFilter = link.dataset.filter;
-            
+
             filterMenu.querySelectorAll('a').forEach(a => a.classList.remove('active'));
             link.classList.add('active');
-            
+
+            const filterTextMap = {
+                'all': 'All',
+                'pending': 'Pending',
+                'completed': 'Completed'
+            };
+
+            const filterClassMap = {
+                'all': 'all',
+                'pending': 'pending',
+                'completed': 'completed'
+            };
+
+            filterBtn.innerHTML = `<i class="fas fa-filter"></i> <span>${filterTextMap[currentFilter]}</span>`;
+            filterBtn.className = `filter-btn ${filterClassMap[currentFilter]}`;
+
             filterMenu.classList.remove('show-dropdown');
             renderTodos();
         }
@@ -554,7 +572,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Search
     searchInput.addEventListener('input', renderTodos);
-
 
     // Initial load
     loadTheme();

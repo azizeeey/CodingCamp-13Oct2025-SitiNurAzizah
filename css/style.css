@@ -108,24 +108,40 @@ body {
 /* ====================================
    3. Header & Summary Section 
    ==================================== */
-.summary-card {
-    display: flex;
-    justify-content: space-between; 
-    padding: 20px 0;
-    margin-bottom: 30px;
-    border-radius: 15px;
-    background-color: var(--bg-summary);
-    border: 1px solid var(--border-light);
+.header-section {
+    text-align: center;
+    margin-bottom: 20px;
 }
 
-.stat-item { 
-    text-align: center; 
-    flex-grow: 1;
-    padding: 0 15px; 
-    border-right: 1px solid var(--border-light);
+/* Summary Card */
+.summary-card {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: var(--bg-summary);
+    border-radius: 15px;
+    box-shadow: var(--shadow);
 }
-.summary-card .stat-item:last-child {
-    border-right: none;
+
+.stat-item {
+    text-align: center;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: var(--bg-container);
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: scale(1.05);
+}
+
+.stat-icon {
+    font-size: 24px;
+    color: var(--color-secondary);
+    margin-bottom: 10px;
 }
 
 .stat-label {
@@ -166,6 +182,12 @@ body {
     font-size: 16px;
     background-color: var(--bg-container);
     color: var(--text-primary);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#todo-input:hover, #date-input:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 8px rgba(255, 105, 180, 0.3);
 }
 
 #todo-input { flex-grow: 1; }
@@ -232,13 +254,34 @@ body {
     align-items: center;
 }
 
-#search-input { 
-    flex-grow: 1; 
+.search-wrapper {
+    position: relative;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    color: var(--text-secondary);
+}
+
+#search-input {
+    width: 100%;
     padding: 12px 15px;
+    padding-left: 40px; /* Make space for the icon */
     border: 1px solid var(--border-dark);
     border-radius: 8px;
     background-color: var(--bg-container);
     color: var(--text-primary);
+    box-sizing: border-box;
+}
+
+#search-input:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 8px rgba(255, 105, 180, 0.3);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .delete-all-btn {
@@ -277,6 +320,10 @@ body {
     gap: 8px;
     width: 100%;
     justify-content: center;
+}
+
+.filter-btn:hover {
+    filter: brightness(95%);
 }
 
 .filter-btn.all {
@@ -335,13 +382,12 @@ body {
 
 table {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 8px; 
-    table-layout: fixed; 
+    border-collapse: collapse;
+    margin-bottom: 20px;
 }
 
 th, td {
-    padding: 15px;
+    padding: 10px;
     text-align: left;
     border-bottom: 1px solid var(--border-dark);
 }
@@ -354,10 +400,24 @@ thead th {
 
 tbody tr {
     background-color: var(--bg-container);
-    border-radius: 8px; 
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); 
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-tbody tr:hover { background-color: var(--table-row-hover); }
+
+tbody tr:hover {
+    transform: scale(1.02);
+    box-shadow: var(--shadow);
+}
+
+.task-parent-row .task-text {
+    cursor: pointer;
+}
+
+.task-parent-row .task-text:hover {
+    color: var(--color-primary);
+}
+
 
 /* Style Sub-Task Row */
 .sub-task-row {
@@ -372,6 +432,20 @@ tbody tr:hover { background-color: var(--table-row-hover); }
     font-size: 10px;
     margin-right: 5px;
     color: var(--color-secondary);
+    transform: rotate(90deg);
+}
+
+/* Collapsible Sub-task Styles */
+.sub-task-row {
+    display: none; /* Hide subtasks by default */
+}
+
+/* Show subtask if its parent is expanded */
+.sub-task-row.parent-expanded {
+    display: table-row;
+}
+
+.task-parent-row.expanded .task-toggle-icon {
     transform: rotate(90deg);
 }
 
@@ -415,6 +489,9 @@ tbody tr:hover { background-color: var(--table-row-hover); }
     font-size: 16px;
     padding: 5px;
     transition: transform 0.2s;
+    border-radius: 20px;
+    padding: 8px 12px;
+    transition: transform 0.2s ease, background-color 0.3s ease;
 }
 .action-buttons button:hover {
     transform: scale(1.1);
@@ -654,7 +731,7 @@ tbody tr:hover { background-color: var(--table-row-hover); }
         margin-bottom: 15px;
     }
     #search-input {
-        order: 1; 
+        order: 1;
         flex-basis: 100%; 
         padding: 8px 10px; 
     }
@@ -703,4 +780,88 @@ tbody tr:hover { background-color: var(--table-row-hover); }
         padding: 10px 15px;
         font-size: 14px;
     }
+}
+
+/* Additional Styles */
+.app-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--color-secondary);
+    margin-bottom: 10px;
+}
+
+.app-subtitle {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+.stat-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.stat-item {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: var(--bg-summary);
+    box-shadow: var(--shadow);
+}
+
+.stat-item .stat-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.stat-item .stat-value {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.progress-bar-container {
+    margin: 20px 0;
+    height: 8px;
+    background-color: var(--border-light);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--color-secondary), var(--color-primary));
+    transition: width 0.3s ease-in-out;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.pagination-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 20px;
+    background-color: var(--color-secondary);
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 12px;
+}
+
+.pagination-btn:disabled {
+    background-color: var(--border-dark);
+    cursor: not-allowed;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background-color: var(--color-primary);
 }
