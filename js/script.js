@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- DOM Elements ---
     const todoForm = document.getElementById('todo-form');
     const todoInput = document.getElementById('todo-input');
     const dateInput = document.getElementById('date-input');
@@ -10,12 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const body = document.body;
     const addTaskBtn = document.getElementById('add-task-btn'); 
 
-    // Filter Dropdown Elements
     const filterBtn = document.getElementById('filter-btn');
     const filterMenu = document.getElementById('filter-menu');
     let currentFilter = 'all'; 
     
-    // Input Mode Elements
     const currentTaskId = document.getElementById('current-task-id');
     const currentParentId = document.getElementById('current-parent-id');
     const inputMode = document.getElementById('input-mode');
@@ -25,16 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const cancelInputModeBtn = document.getElementById('cancel-input-mode');
 
     const notificationElement = document.getElementById('notification');
-    // Modal Elements
     const confirmModal = document.getElementById('confirm-modal');
     const modalDeleteBtn = document.getElementById('modal-delete-btn');
     const modalCancelBtns = document.querySelectorAll('.modal-cancel');
     let actionTarget = null;
 
-    // Ambil data dari Local Storage
     let todos = JSON.parse(localStorage.getItem('todos')) || [];
-
-    // --- Utility Functions ---
 
     function showNotification(message, type = 'info') {
         notificationElement.className = 'notification-popup'; 
@@ -65,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return { task: todos.find(t => t.id === id), parent: null };
     }
 
-    // --- Input Mode Management ---
     function resetInputMode() {
         inputMode.value = 'add';
         currentTaskId.value = '';
@@ -81,8 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     cancelInputModeBtn.addEventListener('click', resetInputMode);
 
-
-    // --- Theme Logic ---
     function loadTheme() {
         const savedTheme = localStorage.getItem('theme') || 'light';
         if (savedTheme === 'dark') {
@@ -100,9 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadTheme();
     });
 
-
-    // --- Core Rendering and Logic ---
-
     function createTaskRow(task, isSubtask = false, parentId = null) {
         const row = document.createElement('tr');
         row.className = task.completed ? 'task-completed' : '';
@@ -112,14 +99,11 @@ document.addEventListener('DOMContentLoaded', () => {
         row.dataset.id = task.id;
         row.dataset.parentId = parentId;
         
-        // Tombol yang harus disabled jika task selesai
         const disableIfCompleted = task.completed ? 'disabled' : '';
         const disableComplete = task.completed ? 'disabled' : ''; 
         
-        // Add a class for parent tasks to handle clicks for collapsing
         if (!isSubtask) {
             row.classList.add('task-parent-row');
-            // If the task is expanded, add the class on creation
             if (task.isExpanded) {
                 row.classList.add('expanded');
             }
@@ -128,11 +112,9 @@ document.addEventListener('DOMContentLoaded', () => {
         let actionButtonsHTML = '';
         let taskTextContent = task.text;
 
-        // Tampilan jumlah sub-task (Hanya untuk Task Parent)
         if (!isSubtask && task.subtasks && task.subtasks.length > 0) {
             const completedSubtasks = task.subtasks.filter(st => st.completed).length;
             const totalSubtasks = task.subtasks.length;
-            // Add a toggle icon for parent tasks with subtasks
             taskTextContent = `
                 <i class="fas fa-chevron-right task-toggle-icon"></i> 
                 ${task.text} 
@@ -186,8 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderTodos() {
         taskList.innerHTML = '';
         
-        // Sort before filtering
-        let currentSort = 'asc'; // or 'desc'
+        let currentSort = 'asc'; 
         todos.sort((a, b) => {
             const dateA = new Date(a.date);
             const dateB = new Date(b.date);
@@ -204,7 +185,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                         (currentFilter === 'completed' && todo.completed) ||
                                         (currentFilter === 'pending' && !todo.completed);
 
-            // Show parent if it matches search and status, OR if any of its subtasks match search and status
             let shouldShowParent = parentMatchesSearch && parentMatchesStatus;
 
             const visibleSubtasks = subtasksMatchingSearch.filter(st => {
@@ -215,14 +195,13 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (visibleSubtasks.length > 0) {
-                shouldShowParent = true; // Always show parent if subtasks are visible
+                shouldShowParent = true; 
             }
 
             if (shouldShowParent) {
                 const parentRow = createTaskRow(todo);
                 taskList.appendChild(parentRow);
 
-                // Render only the subtasks that should be visible
                 if (todo.subtasks) {
                     visibleSubtasks.forEach(subtask => {
                         const subtaskRow = createTaskRow(subtask, true, todo.id);
@@ -256,12 +235,10 @@ document.addEventListener('DOMContentLoaded', () => {
         progressBarFill.style.width = `${progress}%`;
     }
 
-    // Logika Completed Otomatis (Menggunakan subtask untuk menentukan status parent)
     function checkParentCompletion(parentId) {
         const parentTask = todos.find(t => t.id === parentId);
         if (!parentTask || !parentTask.subtasks) return;
 
-        // Cek apakah ada subtask yang pending
         const anySubtaskPending = parentTask.subtasks.some(st => !st.completed);
         const hasSubtasks = parentTask.subtasks.length > 0;
 
@@ -277,7 +254,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTodos();
     }
     
-    // Logika Completed Manual
     function completeTask(id, parentId = null) {
         const { task } = findTaskById(id, parentId);
         if (!task) return;
@@ -308,7 +284,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTodos();
     }
     
-    // --- Input Form Handler (Add, Edit, Subtask) ---
     todoForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
@@ -329,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 text: text,
                 date: date,
                 completed: false,
-                isExpanded: false, // Add isExpanded property
+                isExpanded: false, 
                 subtasks: []
             };
             todos.push(newTodo);
@@ -362,9 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTodos();
     });
 
-    // --- Task List Click Handler (Action Buttons) ---
     taskList.addEventListener('click', (e) => {
-        // Handle clicks on the chevron icon for collapsing/expanding subtasks FIRST
         if (e.target.classList.contains('task-toggle-icon')) {
             const parentRow = e.target.closest('.task-parent-row');
             const parentId = parentRow ? parseInt(parentRow.dataset.id) : null;
@@ -372,15 +345,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (parentId) {
                 const parentTask = todos.find(t => t.id === parentId);
                 if (parentTask) {
-                    parentTask.isExpanded = !parentTask.isExpanded; // Toggle the state in the data
-                    saveTodos(); // Save the new state
-                    renderTodos(); // Re-render to reflect the change
+                    parentTask.isExpanded = !parentTask.isExpanded; 
+                    saveTodos(); 
+                    renderTodos(); 
                 }
             }
-            return; // Stop further execution after handling the toggle
+            return; 
         }
 
-        // THEN, handle action buttons
         const targetBtn = e.target.closest('button');
         if (!targetBtn || (targetBtn.disabled && !targetBtn.classList.contains('delete-btn'))) return; 
         
@@ -403,8 +375,6 @@ document.addEventListener('DOMContentLoaded', () => {
             handleAddSubtask(id);
         }
     });
-    
-    // --- Specific Action Handlers ---
 
     function handleEdit(id, parentId = null) {
         const { task } = findTaskById(id, parentId);
@@ -416,11 +386,9 @@ document.addEventListener('DOMContentLoaded', () => {
         currentTaskId.value = id;
         currentParentId.value = parentId || '';
         
-        // Isi input
         todoInput.value = task.text;
         dateInput.value = task.date;
 
-        // Update UI
         const isSubtask = parentId !== null;
         const parentTask = isSubtask ? findTaskById(parentId).task : null;
         const targetName = isSubtask ? parentTask.text : task.text;
@@ -445,10 +413,9 @@ document.addEventListener('DOMContentLoaded', () => {
         currentTaskId.value = parentId; 
         currentParentId.value = '';
         
-        // Update UI
         todoInput.value = '';
         dateInput.value = ''; 
-        dateInput.disabled = false; // Subtask punya deadline sendiri
+        dateInput.disabled = false; 
         
         todoInput.placeholder = "Enter Sub-Task description . . .";
         addTaskBtn.innerHTML = '<i class="fas fa-plus"></i>'; 
@@ -460,7 +427,6 @@ document.addEventListener('DOMContentLoaded', () => {
         todoInput.focus();
     }
     
-    // --- Modal Confirm Logic (DELETE / DELETE ALL) ---
     function openConfirmModal(id, parentId = null) {
         actionTarget = { id, parentId, mode: 'delete' }; 
         confirmModal.classList.add('show');
@@ -477,7 +443,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('modal-delete-btn').textContent = "DELETE";
     }
 
-    // Handler untuk tombol DELETE di Modal
     modalDeleteBtn.addEventListener('click', () => {
         if (!actionTarget) return;
         const { id, parentId, mode } = actionTarget;
@@ -487,7 +452,6 @@ document.addEventListener('DOMContentLoaded', () => {
             showNotification("All Tasks Deleted!", 'danger');
         } else if (mode === 'delete') {
             if (parentId) {
-                // Hapus Sub-Task
                 const parentIndex = todos.findIndex(t => t.id === parentId);
                 if (parentIndex !== -1) {
                     const subtaskName = findTaskById(id, parentId).task.text;
@@ -496,7 +460,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     showNotification(`Sub-Task "${subtaskName}" Deleted!`, 'danger');
                 }
             } else {
-                // Hapus Task Utama (dan semua subtasknya)
                 const taskName = findTaskById(id).task.text;
                 todos = todos.filter(t => t.id !== id);
                 showNotification(`Task "${taskName}" Deleted!`, 'danger');
@@ -508,19 +471,15 @@ document.addEventListener('DOMContentLoaded', () => {
         closeModal();
     });
 
-    // Delete All Tasks
     deleteAllBtn.addEventListener('click', () => {
         actionTarget = { mode: 'deleteAll' };
         confirmModal.classList.add('show');
         
-        // Hitungan total task (parent + subtask) untuk pesan konfirmasi
         const totalTaskCount = todos.length + todos.reduce((sum, t) => sum + (t.subtasks ? t.subtasks.length : 0), 0);
         document.getElementById('confirm-title').textContent = "Delete All Tasks";
         document.getElementById('confirm-message').textContent = `Are you sure you want to delete all ${totalTaskCount} tasks (including sub-tasks)? This action cannot be undone.`;
         document.getElementById('modal-delete-btn').textContent = "DELETE ALL";
     });
-
-    // --- Filter & Search Logic ---
 
     filterBtn.addEventListener('click', () => {
         filterMenu.classList.toggle('show-dropdown');
@@ -555,7 +514,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Tutup dropdown/modal jika klik di luar
     document.addEventListener('click', (e) => {
         if (!filterBtn.contains(e.target) && !filterMenu.contains(e.target)) {
             filterMenu.classList.remove('show-dropdown');
@@ -569,11 +527,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-
-    // Search
     searchInput.addEventListener('input', renderTodos);
 
-    // Initial load
     loadTheme();
     renderTodos();
     resetInputMode();
