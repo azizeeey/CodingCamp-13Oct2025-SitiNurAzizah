@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="edit-btn" data-id="${task.id}" data-parent-id="${parentId}" ${disableIfCompleted} title="Edit Sub-Task">
                     <i class="fas fa-edit"></i>
                 </button>
-                <button class="delete-btn" data-id="${task.id}" data-parent-id="${parentId}" title="Delete Sub-Task">
+                <button class="delete-btn" data-id="${task.id}" data-parent-id="${parentId}" ${disableIfCompleted} title="Delete Sub-Task">
                     <i class="fas fa-trash-alt"></i>
                 </button>
             `;

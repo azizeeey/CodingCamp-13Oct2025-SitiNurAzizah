@@ -398,6 +398,20 @@ thead th {
     background-color: var(--table-header-bg);
 }
 
+/* Set column widths for better layout */
+thead th:nth-child(1) { /* Task */
+    width: 50%;
+}
+thead th:nth-child(2) { /* Due Date */
+    width: 15%;
+}
+thead th:nth-child(3) { /* Status */
+    width: 15%;
+}
+thead th:nth-child(4) { /* Actions */
+    width: 20%;
+}
+
 tbody tr {
     background-color: var(--bg-container);
     border-radius: 8px;
@@ -508,6 +522,13 @@ tbody tr:hover {
     text-decoration: line-through;
     color: var(--text-secondary);
 }
+/* Disable due date for completed tasks */
+.task-completed td:nth-child(2) {
+    color: var(--text-secondary);
+    text-decoration: line-through;
+}
+
+/* Make status badge less prominent for completed tasks */
 .task-completed .status-badge {
     text-decoration: none; 
 }
@@ -515,17 +536,16 @@ tbody tr:hover {
 /* Disable State */
 .action-buttons button[disabled] {
     opacity: 0.4;
-    cursor: not-allowed;
+    cursor: default;
     transform: none;
     pointer-events: none; 
 }
 .action-buttons button[disabled]:hover {
     transform: none;
 }
-/* Delete tetap aktif */
-.action-buttons .delete-btn {
+/* Pastikan delete button yang tidak disabled tetap bisa di-klik */
+.action-buttons .delete-btn:not([disabled]) {
     pointer-events: auto !important; 
-    opacity: 1 !important;
 }
 
 
